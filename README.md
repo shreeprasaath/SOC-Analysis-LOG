@@ -2,7 +2,7 @@
 
 A client-side web application for Security Operations Center analysts. Paste raw logs, select an AI model, and get a structured incident report — with PII masked before anything leaves your browser.
 
-Live: https://maveera.github.io/SOC-Incident-Analysis/
+Live: https://shreeprasaath.github.io/SOC-Analysis-LOG/
 
 ---
 
