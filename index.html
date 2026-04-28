@@ -6,438 +6,559 @@
   <title>SOC Intelligence Console</title>
   <style>
     :root {
-      --primary: #6366f1;
-      --bg-dark: #0f172a;
-      --card-bg: #1e293b;
-      --text-main: #f8fafc;
-      --text-gray: #94a3b8;
-      --border: #334155;
-      --input-bg: rgba(0,0,0,0.2);
-      --danger: #ef4444;
-      --success: #22c55e;
-
-      --bot-user: rgba(99, 102, 241, 0.18);
-      --bot-agent: rgba(34, 197, 94, 0.14);
-      --bot-shadow: 0 25px 50px -12px rgba(0,0,0,0.55);
+      --primary: #818cf8;
+      --primary-dim: rgba(129,140,248,0.12);
+      --bg: #05070f;
+      --surface: #0d1117;
+      --elevated: #161b22;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.13);
+      --border-focus: rgba(129,140,248,0.45);
+      --text: #e6edf3;
+      --muted: #7d8590;
+      --danger: #f85149;
+      --danger-dim: rgba(248,81,73,0.08);
+      --success: #3fb950;
+      --bot-user: rgba(129,140,248,0.11);
+      --bot-agent: rgba(63,185,80,0.09);
+      --bot-shadow: 0 24px 64px rgba(0,0,0,0.65);
     }
 
     body.light-theme {
-      --bg-dark: #f1f5f9;
-      --card-bg: #ffffff;
-      --text-main: #1e293b;
-      --text-gray: #475569;
-      --border: #cbd5e1;
-      --input-bg: #f8fafc;
-
-      --bot-user: rgba(99, 102, 241, 0.12);
-      --bot-agent: rgba(34, 197, 94, 0.10);
-      --bot-shadow: 0 25px 50px -12px rgba(0,0,0,0.18);
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --elevated: #eef1f4;
+      --border: rgba(0,0,0,0.08);
+      --border-hover: rgba(0,0,0,0.15);
+      --border-focus: rgba(99,102,241,0.4);
+      --text: #1c2128;
+      --muted: #57606a;
+      --bot-user: rgba(99,102,241,0.09);
+      --bot-agent: rgba(63,185,80,0.07);
+      --bot-shadow: 0 24px 64px rgba(0,0,0,0.14);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      display: flex;
-      justify-content: center;
-      padding: 20px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
       min-height: 100vh;
-      transition: 0.3s;
+      -webkit-font-smoothing: antialiased;
     }
 
-    .dashboard {
-      width: 100%;
-      max-width: 1150px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-    }
-
-    header {
+    /* ── Header ─────────────────────────────── */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 54px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 30px;
+      justify-content: space-between;
+      padding: 0 32px;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 20px;
-      flex-wrap: wrap;
-      gap: 15px;
+      background: rgba(5,7,15,0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
 
-    .header-controls { display: flex; gap: 10px; align-items: center; }
+    body.light-theme .app-header {
+      background: rgba(246,248,250,0.85);
+    }
 
-    h1 { font-size: 24px; letter-spacing: -0.5px; }
-    h1 a { color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px; }
-    h1 span { color: var(--primary); }
+    .app-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+    }
 
+    .logo-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .logo-name {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-name em {
+      font-style: normal;
+      color: var(--primary);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Layout ─────────────────────────────── */
+    .app-main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 36px 28px 80px;
+    }
+
+    /* ── Section ─────────────────────────────── */
+    .section { margin-bottom: 32px; }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .section-head::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .section-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ── Grid ─────────────────────────────── */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-      margin-bottom: 25px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
     }
 
+    /* ── Field ─────────────────────────────── */
     .input-group {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       position: relative;
       width: 100%;
     }
 
-    .combo {
-      position: relative;
-      width: 100%;
-    }
-
-    .combo-list {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      margin-top: 4px;
-      background: var(--card-bg);
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      max-height: 220px;
-      overflow-y: auto;
-      padding: 4px 0;
-      list-style: none;
-      z-index: 20;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.45);
-      display: none;
-    }
-
-    .combo-list li {
-      padding: 8px 14px;
-      font-size: 13px;
-      cursor: pointer;
-      color: var(--text-main);
-      transition: background 0.12s ease, color 0.12s ease;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .combo-list li:hover {
-      background: rgba(99, 102, 241, 0.16);
-      color: var(--text-main);
-    }
-
-    label {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-gray);
+    .field-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      color: var(--muted);
     }
 
     input, select, textarea {
-      background: var(--input-bg);
+      background: var(--surface);
       border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 12px 16px;
-      border-radius: 10px;
-      font-size: 14px;
-      transition: 0.2s;
-      appearance: none;
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: inherit;
       width: 100%;
+      outline: none;
+      appearance: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
 
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(129,140,248,0.09);
+    }
+
+    input:hover:not(:focus):not([readonly]), select:hover:not(:focus), textarea:hover:not(:focus) {
+      border-color: var(--border-hover);
+    }
+
+    input::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.55; }
+
     select {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%237d8590'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 1rem center;
-      background-size: 1rem;
-      padding-right: 2.5rem;
+      background-position: right 10px center;
+      background-size: 13px;
+      padding-right: 30px;
+      cursor: pointer;
     }
 
     input[readonly] {
-      background: rgba(100, 100, 100, 0.1);
-      color: var(--text-gray);
+      background: rgba(255,255,255,0.02);
+      color: var(--muted);
       cursor: not-allowed;
     }
 
+    textarea#rawLogs {
+      min-height: 200px;
+      resize: vertical;
+      font-family: 'Fira Code', 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      line-height: 1.65;
+    }
+
+    /* ── Key overlays ─────────────────────────────── */
     .edit-link {
       position: absolute;
       right: 12px;
-      top: 34px;
-      font-size: 11px;
+      top: 32px;
+      font-size: 10px;
+      font-weight: 700;
       color: var(--primary);
       cursor: pointer;
       display: none;
-      font-weight: 800;
       z-index: 6;
       user-select: none;
+      letter-spacing: 0.04em;
     }
 
     .key-toggle {
       position: absolute;
-      right: 52px;
-      top: 34px;
-      font-size: 11px;
-      color: var(--text-gray);
+      right: 46px;
+      top: 32px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
       cursor: pointer;
-      font-weight: 800;
       z-index: 6;
       user-select: none;
       display: none;
+      letter-spacing: 0.04em;
     }
 
-    #aiKey { padding-right: 120px; }
+    #aiKey { padding-right: 96px; }
 
-    .ti-wrap {
-      position: relative;
-      width: 100%;
-      display: flex;
-      gap: 5px;
-      align-items: center;
-    }
+    .ti-wrap { display: flex; gap: 8px; align-items: center; width: 100%; }
+    .ti-input-box { position: relative; flex: 1; min-width: 0; }
+    #tiKey { width: 100%; padding-right: 96px; }
+    .ti-input-box .key-toggle { right: 46px; top: 50%; transform: translateY(-50%); }
+    .ti-input-box .edit-link  { right: 12px; top: 50%; transform: translateY(-50%); }
 
-    .ti-input-box {
-      position: relative;
-      flex: 1;
-      width: 100%;
-    }
+    /* ── Combo ─────────────────────────────── */
+    .combo { position: relative; width: 100%; }
 
-    #tiKey {
-      width: 100%;
-      padding-right: 120px;
-    }
-
-    .ti-input-box .key-toggle {
-      right: 52px;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-
-    .ti-input-box .edit-link {
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-
-    .btn {
-      cursor: pointer;
-      border-radius: 10px;
-      font-weight: 700;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      transition: 0.2s;
-    }
-
-    .btn-main {
-      background: var(--primary);
-      color: white;
-      width: 100%;
-      padding: 16px;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-
-    .btn-reset {
-      background: transparent;
-      border: 1px solid var(--danger);
-      color: var(--danger);
-      font-size: 12px;
-      padding: 6px 15px;
-      border-radius: 8px;
-      font-weight: 600;
-    }
-
-    .btn-theme {
-      background: transparent;
+    .combo-list {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      background: var(--elevated);
       border: 1px solid var(--border);
-      font-size: 18px;
-      padding: 5px 12px;
-      border-radius: 8px;
-      color: var(--text-main);
-      cursor: pointer;
+      border-radius: 10px;
+      max-height: 240px;
+      overflow-y: auto;
+      list-style: none;
+      z-index: 50;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+      display: none;
+      padding: 4px;
     }
 
-    .btn-open {
-      background: transparent;
-      border: 1px solid var(--primary);
-      color: var(--primary);
+    .combo-list li {
+      padding: 8px 12px;
       font-size: 12px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      font-weight: 800;
       cursor: pointer;
-      min-width: 120px;
-      display: none;
+      color: var(--text);
+      border-radius: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background 0.1s, color 0.1s;
+    }
+
+    .combo-list li:hover { background: var(--primary-dim); color: var(--primary); }
+
+    /* ── Buttons ─────────────────────────────── */
+    .btn {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: 44px;
+      gap: 7px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      transition: all 0.15s;
       white-space: nowrap;
     }
 
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      width: 100%;
+      padding: 12px 20px;
+      font-size: 14px;
+      margin-top: 6px;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-primary:hover { filter: brightness(1.1); box-shadow: 0 0 0 3px rgba(129,140,248,0.18); }
+    .btn-primary:active { transform: translateY(1px); filter: brightness(0.97); }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 7px 14px;
+      font-size: 12px;
+    }
+
+    .btn-ghost:hover { border-color: var(--border-hover); color: var(--text); }
+
+    .btn-danger-ghost {
+      background: transparent;
+      border: 1px solid rgba(248,81,73,0.28);
+      color: var(--danger);
+      padding: 7px 14px;
+      font-size: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-danger-ghost:hover { background: var(--danger-dim); }
+
+    .btn-open {
+      background: transparent;
+      border: 1px solid rgba(129,140,248,0.3);
+      color: var(--primary);
+      font-size: 12px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      min-width: 72px;
+      height: 40px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .btn-open:hover { background: var(--primary-dim); }
+
+    /* ── Loading ─────────────────────────────── */
     #loading {
       display: none;
       flex-direction: column;
       align-items: center;
-      gap: 15px;
-      margin: 30px 0;
+      gap: 14px;
+      padding: 48px 0;
     }
 
     .scanner-bar {
-      width: 100%;
-      max-width: 400px;
-      height: 4px;
+      width: 280px;
+      height: 2px;
       background: var(--border);
-      border-radius: 10px;
+      border-radius: 2px;
       position: relative;
       overflow: hidden;
     }
 
     .scanner-bar::after {
-      content: "";
-      width: 80px;
+      content: '';
+      width: 56px;
       height: 100%;
       background: var(--primary);
       position: absolute;
-      left: -80px;
-      animation: scan 1.8s infinite linear;
-      box-shadow: 0 0 15px var(--primary);
+      left: -56px;
+      animation: scan 1.6s infinite linear;
+      box-shadow: 0 0 10px var(--primary);
     }
 
     .loading-text {
-      color: var(--primary);
-      font-weight: bold;
-      font-size: 12px;
+      font-size: 10px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      animation: pulse 1.5s infinite;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      animation: pulse 1.6s infinite;
     }
 
-    @keyframes scan { 0% { left: -80px; } 100% { left: 100%; } }
-    @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+    @keyframes scan  { 0% { left: -56px; } 100% { left: 100%; } }
+    @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
 
-    .report-area { margin-top: 30px; display: none; }
+    /* ── TI results ─────────────────────────────── */
+    .ti-results {
+      margin-top: 16px;
+      display: none;
+      padding: 14px 16px;
+      background: var(--danger-dim);
+      border: 1px solid rgba(248,81,73,0.18);
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: 'Fira Code', monospace;
+      line-height: 1.7;
+    }
+
+    /* ── Report ─────────────────────────────── */
+    .report-area { margin-top: 32px; display: none; }
+
+    .report-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .report-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .btn-copy {
+      background: var(--elevated);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .btn-copy:hover { border-color: var(--border-hover); color: var(--text); }
 
     .report-content {
-      background: rgba(0,0,0,0.05);
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 25px;
+      border-radius: 10px;
+      padding: 24px;
       white-space: pre-wrap;
-      font-family: 'Fira Code', monospace;
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--text-main);
+      font-family: 'Fira Code', 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text);
       overflow-x: auto;
     }
 
-    .ti-results {
-      margin-top: 15px;
-      display: none;
-      padding: 15px;
-      background: rgba(239, 68, 68, 0.1);
-      border-left: 4px solid var(--danger);
-      border-radius: 8px;
-      font-size: 13px;
+    /* ── Footer ─────────────────────────────── */
+    .app-footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 28px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
     }
 
-    /* =========================
-       FLOATING SOC AI AGENT UI
-       ========================= */
+    .app-footer a { color: var(--primary); text-decoration: none; opacity: 0.8; }
+    .app-footer a:hover { opacity: 1; }
+
+    /* ── SOC Bot FAB ─────────────────────────────── */
     .socbot-fab {
       position: fixed;
-      right: 22px;
-      bottom: 22px;
-      width: 58px;
-      height: 58px;
-      border-radius: 999px;
+      right: 20px;
+      bottom: 20px;
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
       background: var(--primary);
       border: none;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+      box-shadow: 0 6px 20px rgba(99,102,241,0.38);
       z-index: 9999;
       color: #fff;
-      font-size: 22px;
-      font-weight: 900;
-      transition: transform 0.2s ease;
+      font-size: 18px;
+      transition: transform 0.15s, box-shadow 0.15s;
     }
-    .socbot-fab:hover { transform: translateY(-2px); }
 
+    .socbot-fab:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(99,102,241,0.48);
+    }
+
+    /* ── SOC Bot Window ─────────────────────────────── */
     .socbot-window {
       position: fixed;
-      right: 22px;
-      bottom: 90px;
-      width: 420px;
-      max-width: calc(100vw - 44px);
-      height: 560px;
-      max-height: calc(100vh - 130px);
+      right: 20px;
+      bottom: 78px;
+      width: 400px;
+      max-width: calc(100vw - 40px);
+      height: 540px;
+      max-height: calc(100vh - 108px);
       border: 1px solid var(--border);
-      border-radius: 18px;
-      background: var(--card-bg);
+      border-radius: 16px;
+      background: var(--surface);
       box-shadow: var(--bot-shadow);
       z-index: 9999;
       display: none;
       overflow: hidden;
       transform-origin: bottom right;
-      animation: popIn 0.22s ease;
+      animation: popIn 0.18s ease;
     }
 
     @keyframes popIn {
-      from { transform: scale(0.95); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+      from { transform: scale(0.93) translateY(6px); opacity: 0; }
+      to   { transform: scale(1)    translateY(0);   opacity: 1; }
     }
 
     .socbot-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 14px;
+      padding: 13px 16px;
       border-bottom: 1px solid var(--border);
-      gap: 10px;
-    }
-
-    .socbot-title {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
     }
 
     .socbot-title .main {
-      font-weight: 900;
-      font-size: 13px;
-      letter-spacing: 0.08em;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--primary);
     }
 
     .socbot-title .sub {
-      font-size: 11px;
-      color: var(--text-gray);
-      font-weight: 700;
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
     }
 
     .socbot-close {
       background: transparent;
       border: 1px solid var(--border);
-      color: var(--text-main);
+      color: var(--muted);
       cursor: pointer;
-      border-radius: 10px;
-      padding: 6px 10px;
-      font-weight: 900;
-      font-size: 12px;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      transition: all 0.12s;
     }
 
-    .socbot-body {
-      height: calc(100% - 52px);
-      display: flex;
-      flex-direction: column;
-    }
+    .socbot-close:hover { color: var(--text); border-color: var(--border-hover); }
+
+    .socbot-body { height: calc(100% - 54px); display: flex; flex-direction: column; }
 
     .socbot-chat {
       flex: 1;
@@ -446,271 +567,235 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      background: rgba(0,0,0,0.03);
     }
 
-    .msg-row {
-      display: flex;
-      width: 100%;
-      animation: msgIn 0.18s ease;
-    }
+    .msg-row { display: flex; width: 100%; animation: msgIn 0.15s ease; }
 
     @keyframes msgIn {
-      from { transform: translateY(6px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+      from { transform: translateY(4px); opacity: 0; }
+      to   { transform: translateY(0);   opacity: 1; }
     }
 
-    .msg-row.user { justify-content: flex-end; }
+    .msg-row.user  { justify-content: flex-end; }
     .msg-row.agent { justify-content: flex-start; }
 
     .msg-bubble {
-      max-width: 82%;
-      padding: 10px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
+      max-width: 84%;
+      padding: 9px 12px;
+      border-radius: 12px;
       font-family: 'Fira Code', monospace;
-      font-size: 13px;
-      line-height: 1.5;
+      font-size: 12px;
+      line-height: 1.55;
       white-space: pre-wrap;
     }
 
-    .msg-row.user .msg-bubble {
+    .msg-row.user  .msg-bubble {
       background: var(--bot-user);
-      border-color: rgba(99, 102, 241, 0.35);
-      border-bottom-right-radius: 6px;
+      border: 1px solid rgba(129,140,248,0.2);
+      border-bottom-right-radius: 4px;
     }
 
     .msg-row.agent .msg-bubble {
       background: var(--bot-agent);
-      border-color: rgba(34, 197, 94, 0.35);
-      border-bottom-left-radius: 6px;
+      border: 1px solid rgba(63,185,80,0.15);
+      border-bottom-left-radius: 4px;
     }
 
-    .typing {
-      display: inline-flex;
-      gap: 5px;
-      align-items: center;
-    }
-    .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--text-gray);
-      animation: bounce 1s infinite ease-in-out;
-    }
+    .typing { display: inline-flex; gap: 4px; align-items: center; }
+    .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); animation: bounce 1s infinite ease-in-out; }
     .dot:nth-child(2) { animation-delay: 0.15s; }
-    .dot:nth-child(3) { animation-delay: 0.3s; }
+    .dot:nth-child(3) { animation-delay: 0.30s; }
+
     @keyframes bounce {
-      0%, 100% { transform: translateY(0); opacity: 0.5; }
-      50% { transform: translateY(-4px); opacity: 1; }
+      0%, 100% { transform: translateY(0);    opacity: 0.4; }
+      50%       { transform: translateY(-3px); opacity: 1;   }
     }
 
-    /* Suggestions ABOVE input bar (as you asked) */
     .socbot-suggestions {
-      padding: 10px 12px 0 12px;
+      padding: 8px 12px 6px;
       display: flex;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
       border-top: 1px solid var(--border);
-      background: rgba(0,0,0,0.02);
     }
 
     .socbot-chip {
       border: 1px solid var(--border);
-      padding: 7px 10px;
+      padding: 5px 10px;
       border-radius: 999px;
-      font-size: 12px;
+      font-size: 11px;
       cursor: pointer;
-      background: rgba(0,0,0,0.05);
-      color: var(--text-main);
+      background: var(--elevated);
+      color: var(--muted);
       user-select: none;
-      font-weight: 800;
-      transition: transform 0.15s ease, border-color 0.15s ease;
+      font-weight: 600;
+      font-family: inherit;
+      transition: all 0.12s;
     }
 
-    .socbot-chip:hover {
-      border-color: var(--primary);
-      transform: translateY(-1px);
-    }
+    .socbot-chip:hover { border-color: rgba(129,140,248,0.4); color: var(--primary); background: var(--primary-dim); }
 
     .socbot-input-row {
       display: flex;
-      gap: 10px;
-      padding: 10px 12px 12px 12px;
-      background: rgba(0,0,0,0.02);
+      gap: 8px;
+      padding: 10px 12px 12px;
+      border-top: 1px solid var(--border);
     }
 
-    .socbot-input-row input {
-      flex: 1;
-      min-width: 120px;
-    }
+    .socbot-input-row input { flex: 1; min-width: 0; padding: 9px 12px; font-size: 12px; }
 
     .socbot-ask {
       background: var(--primary);
       color: #fff;
       border: none;
-      border-radius: 10px;
-      padding: 10px 12px;
+      border-radius: 8px;
+      padding: 9px 14px;
       cursor: pointer;
-      font-weight: 900;
-      white-space: nowrap;
-      transition: transform 0.15s ease;
-    }
-    .socbot-ask:hover { transform: translateY(-1px); }
-
-    /* Fullscreen on mobile */
-    @media (max-width: 520px) {
-      .socbot-window {
-        right: 10px;
-        left: 10px;
-        bottom: 90px;
-        width: auto;
-        height: 72vh;
-        max-height: calc(100vh - 120px);
-      }
-      .socbot-fab { right: 14px; bottom: 14px; }
-      .dashboard { padding: 18px; }
-    }
-
-    footer {
-      margin-top: 40px;
-      text-align: center;
+      font-weight: 700;
+      font-family: inherit;
       font-size: 12px;
-      color: var(--text-gray);
-      border-top: 1px solid var(--border);
-      padding-top: 20px;
+      transition: filter 0.15s;
+    }
+
+    .socbot-ask:hover { filter: brightness(1.1); }
+
+    /* ── Mobile ─────────────────────────────── */
+    @media (max-width: 560px) {
+      .app-header { padding: 0 16px; }
+      .app-main   { padding: 24px 16px 80px; }
+      .app-footer { padding: 16px; }
+      .socbot-window { right: 10px; left: 10px; bottom: 74px; width: auto; height: 72vh; }
+      .socbot-fab { right: 12px; bottom: 12px; }
     }
   </style>
 </head>
 <body>
 
-<div class="dashboard">
-  <header>
-    <h1><a href="https://maveera.github.io/SOC-Incident-Analysis/" target="_blank">🛡️ SOC <span>Intelligence</span> Console</a></h1>
-    <div class="header-controls">
-      <button class="btn-reset" onclick="resetConsole()">Reset Console</button>
-      <button class="btn-theme" id="themeToggle">☀️</button>
-    </div>
-  </header>
+<header class="app-header">
+  <a class="app-logo" href="https://maveera.github.io/SOC-Incident-Analysis/" target="_blank">
+    <div class="logo-icon">🛡</div>
+    <span class="logo-name">SOC <em>Intelligence</em></span>
+  </a>
+  <div class="header-right">
+    <button class="btn-danger-ghost" onclick="resetConsole()">Reset</button>
+    <button class="btn btn-ghost" id="themeToggle">☀️</button>
+  </div>
+</header>
 
-  <label style="margin-bottom:10px; display:block">🔐 AI Keys & Personnel</label>
-  <div class="grid">
-    <div class="input-group">
-      <label>(Gemini/ChatGPT)</label>
-      <input id="aiKey" type="password" placeholder="Paste Key & Press Enter">
-      <span class="key-toggle" onclick="toggleKeyVisibility('aiKey')" id="toggleAiKey">View</span>
-      <span id="editAi" class="edit-link" onclick="unlockKey('aiKey')">Edit</span>
-    </div>
+<main class="app-main">
 
-    <div class="input-group">
-      <label>Customer Name</label>
-      <input id="customerName" type="text" placeholder="e.g. Anand">
-    </div>
-
-    <div class="input-group">
-      <label>Analyst Name</label>
-      <input id="analystName" type="text" placeholder="Your Name">
-    </div>
-
-    <div class="input-group">
-      <label>IT Keys (Optional)</label>
-
-      <div class="ti-wrap">
-        <div class="ti-input-box">
-          <input id="tiKey" type="password" placeholder="Optional Key & Enter">
-          <span class="key-toggle" onclick="toggleKeyVisibility('tiKey')" id="toggleTiKey">View</span>
-          <span id="editTi" class="edit-link" onclick="unlockKey('tiKey')">Edit</span>
+  <div class="section">
+    <div class="section-head"><span class="section-title">Configuration</span></div>
+    <div class="grid">
+      <div class="input-group">
+        <span class="field-label">API Key — Gemini / OpenAI</span>
+        <input id="aiKey" type="password" placeholder="Paste key and press Enter">
+        <span class="key-toggle" onclick="toggleKeyVisibility('aiKey')" id="toggleAiKey">Show</span>
+        <span id="editAi" class="edit-link" onclick="unlockKey('aiKey')">Edit</span>
+      </div>
+      <div class="input-group">
+        <span class="field-label">Customer Name</span>
+        <input id="customerName" type="text" placeholder="e.g. Anand">
+      </div>
+      <div class="input-group">
+        <span class="field-label">Analyst Name</span>
+        <input id="analystName" type="text" placeholder="Your name">
+      </div>
+      <div class="input-group">
+        <span class="field-label">Threat Intel Key (Optional)</span>
+        <div class="ti-wrap">
+          <div class="ti-input-box">
+            <input id="tiKey" type="password" placeholder="Optional — press Enter">
+            <span class="key-toggle" onclick="toggleKeyVisibility('tiKey')" id="toggleTiKey">Show</span>
+            <span id="editTi" class="edit-link" onclick="unlockKey('tiKey')">Edit</span>
+          </div>
+          <select id="tiProvider" style="width:130px;flex-shrink:0">
+            <option value="abuseipdb">AbuseIPDB</option>
+            <option value="virustotal">VirusTotal</option>
+            <option value="alienvault">AlienVault</option>
+            <option value="providerSite">IT Provider</option>
+          </select>
+          <button class="btn-open" id="tiOpenBtn" onclick="openTIProviderSite()">Open</button>
         </div>
+      </div>
+    </div>
+  </div>
 
-        <select id="tiProvider" style="width: 160px;">
-          <option value="abuseipdb">AbuseIPDB</option>
-          <option value="virustotal">VirusTotal</option>
-          <option value="alienvault">AlienVault</option>
-          <option value="providerSite">IT Provider Site</option>
+  <div class="section">
+    <div class="section-head"><span class="section-title">Analysis Setup</span></div>
+    <div class="grid">
+      <div class="input-group">
+        <span class="field-label">Incident Rule</span>
+        <div class="combo" id="incidentCombo">
+          <input id="incidentType" type="text" placeholder="Search or type incident rule" autocomplete="off">
+          <ul id="incidentDropdown" class="combo-list"></ul>
+        </div>
+      </div>
+      <div class="input-group">
+        <span class="field-label">AI Provider</span>
+        <select id="aiProvider">
+          <option value="gemini">Google Gemini</option>
+          <option value="openai">OpenAI</option>
+          <option value="claude">Anthropic Claude</option>
+          <option value="cohere">Cohere</option>
+          <option value="mistral">Mistral</option>
+          <option value="groq">Groq</option>
+          <option value="perplexity">Perplexity</option>
+          <option value="azureopenai">Azure OpenAI</option>
         </select>
-
-        <button class="btn-open" id="tiOpenBtn" onclick="openTIProviderSite()">Open</button>
+      </div>
+      <div class="input-group">
+        <span class="field-label">Model</span>
+        <select id="modelSelect"></select>
       </div>
     </div>
   </div>
 
-  <div class="grid">
-    <div class="input-group">
-      <label>Incident Rule</label>
-      <div class="combo" id="incidentCombo">
-        <input
-          id="incidentType"
-          type="text"
-          placeholder="Search or type incident rule"
-          autocomplete="off"
-        >
-        <ul id="incidentDropdown" class="combo-list"></ul>
-      </div>
-    </div>
-
-    <div class="input-group">
-      <label>AI Provider</label>
-      <select id="aiProvider">
-        <option value="gemini">Google Gemini</option>
-        <option value="openai">OpenAI</option>
-        <option value="claude">Anthropic Claude</option>
-        <option value="cohere">Cohere</option>
-        <option value="mistral">Mistral</option>
-        <option value="groq">Groq</option>
-        <option value="perplexity">Perplexity</option>
-        <option value="azureopenai">Azure OpenAI</option>
-      </select>
-    </div>
-
-    <div class="input-group">
-      <label>Model Selector</label>
-      <select id="modelSelect"></select>
-    </div>
+  <div class="section">
+    <div class="section-head"><span class="section-title">Raw Log Input</span></div>
+    <textarea id="rawLogs" placeholder="Paste unmasked raw logs here..."></textarea>
   </div>
 
-  <div class="input-group">
-    <label>Unmasked RAW Logs</label>
-    <textarea id="rawLogs" placeholder="Paste full logs here..." style="min-height:220px"></textarea>
-  </div>
-
-  <button class="btn btn-main" onclick="runSOCEngine()">🚀 Run Analysis Engine</button>
+  <button class="btn btn-primary" onclick="runSOCEngine()">Run Analysis Engine</button>
 
   <div id="tiSection" class="ti-results"></div>
 
   <div id="loading">
     <div class="scanner-bar"></div>
-    <div class="loading-text">Protecting Data & Analyzing...</div>
+    <div class="loading-text">Protecting Data &amp; Analyzing</div>
   </div>
 
   <div class="report-area" id="reportSection">
+    <div class="report-bar">
+      <span class="report-label">Analysis Report</span>
+      <button class="btn-copy" onclick="copyReport()">Copy</button>
+    </div>
     <div class="report-content" id="reportContent"></div>
-    <button class="btn btn-main" style="background:#475569" id="copyBtn" onclick="copyReport()">📋 Copy Report</button>
   </div>
 
-  <footer>© 2026 All Rights Reserved | <a href="https://maveera.tech" target="_blank" style="color:var(--primary); text-decoration:none">Maveera</a></footer>
-</div>
+</main>
 
-<!-- FLOATING SOC BOT -->
+<footer class="app-footer">
+  © 2026 All Rights Reserved &middot; <a href="https://maveera.tech" target="_blank">Maveera</a>
+</footer>
+
+<!-- Floating SOC Bot -->
 <button class="socbot-fab" id="socbotFab" onclick="toggleSocBot()">💬</button>
 
 <div class="socbot-window" id="socbotWindow">
   <div class="socbot-header">
     <div class="socbot-title">
       <div class="main">SOC AI Agent</div>
-      <div class="sub">Chatbot based on analysis</div>
+      <div class="sub">Ask questions about the analysis</div>
     </div>
     <button class="socbot-close" onclick="toggleSocBot()">Close</button>
   </div>
-
   <div class="socbot-body">
     <div class="socbot-chat" id="socbotChat"></div>
-
-    <!-- Suggestions moved ABOVE input bar -->
     <div class="socbot-suggestions" id="socbotSuggestions"></div>
-
     <div class="socbot-input-row">
-      <input id="socbotQuestion" type="text" placeholder="Ask your SOC question..." />
-      <button class="socbot-ask" onclick="askSocBot()">Ask</button>
+      <input id="socbotQuestion" type="text" placeholder="Ask your SOC question...">
+      <button class="socbot-ask" onclick="askSocBot()">Send</button>
     </div>
   </div>
 </div>
