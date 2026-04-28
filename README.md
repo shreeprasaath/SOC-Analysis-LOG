@@ -1,6 +1,6 @@
 # SOC Intelligence Console
 
-A client-side web application for Security Operations Center analysts. Paste raw logs, select an AI model, and get a structured incident report — with PII masked before anything leaves your browser.
+A client-side web application for Security Operations Center analysts. Paste raw logs, select an AI model, and get a structured incident report — with PII masked before anything leaves your browser, Dosen't store anything.
 
 Live: https://shreeprasaath.github.io/SOC-Analysis-LOG/
 
