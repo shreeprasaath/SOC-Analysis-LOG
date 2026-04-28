@@ -29,7 +29,7 @@
       --border: #cbd5e1;
       --input-bg: #f8fafc;
 
-      --bot-user: rgba(99, 102, 241, 0.12);F
+      --bot-user: rgba(99, 102, 241, 0.12);
       --bot-agent: rgba(34, 197, 94, 0.10);
       --bot-shadow: 0 25px 50px -12px rgba(0,0,0,0.18);
     }
@@ -679,7 +679,7 @@
 
   <div id="loading">
     <div class="scanner-bar"></div>
-    <div class="loading-text">Protecting Data & Analyzing...</div>
+    <div class="loading-text" id="loadingText">Protecting Data & Analyzing...</div>
   </div>
 
   <div class="report-area" id="reportSection">
@@ -716,6 +716,34 @@
 </div>
 
 <script>
+/* ─── Gemini rate-limit retry helper ─────────────────────────────────────── */
+async function geminiRequest(model, aiKey, payload, setStatus) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/${model}:generateContent?key=${aiKey}`;
+  const delays = [10, 20, 40]; // seconds before each retry
+  for (let attempt = 0; attempt <= delays.length; attempt++) {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await response.json();
+    if (response.ok) return data;
+    const isRateLimit = response.status === 429 ||
+      (data.error?.message || "").toLowerCase().includes("quota") ||
+      (data.error?.message || "").toLowerCase().includes("rate");
+    if (isRateLimit && attempt < delays.length) {
+      const wait = delays[attempt];
+      for (let s = wait; s > 0; s--) {
+        if (setStatus) setStatus(`Rate limit hit. Retrying in ${s}s... (attempt ${attempt + 1}/${delays.length})`);
+        await new Promise(r => setTimeout(r, 1000));
+      }
+      if (setStatus) setStatus("Retrying request...");
+    } else {
+      throw new Error(data.error?.message || `HTTP ${response.status}`);
+    }
+  }
+}
+
 const INCIDENTS = ["No logs from a device","FortiSIEM Performance Monitoring Relay Not Working","Multiple Logon Failures: Misc App","Multiple Logon Failures: Web Server","Multiple Logon Failures: VPN","Multiple Logon Failures: Database","Multiple Logon Failures: Same Src and Dest and Multiple Accounts","Multiple Windows Accounts Disabled by Administrator","Brute Force Host Login Success","Brute Force Domain Login Success","Brute Force App Login Success","Brute Force Host Logon Failure Domain Alert","Office365 Brute Force Login Attempts Same User","Office365 Brute Force Login Attempts Same Source","Server Down: No Ping Response","Network Device Down: No Ping Response","Server CPU Warning","Server CPU Critical","High Process CPU Server","High Process CPU Network Device","Server Memory Warning","Server Memory Critical","Sudden Increase in System Memory Usage","Sudden Increase in System CPU Usage","Server Disk Latency Warning","Server Disk Latency Critical","Server Disk Space Warning","Server Disk Space Critical","Server Intf Util Warning","Server Intf Util Critical","Server Intf Error Warning","Server Intf Error Critical","Network Intf Error Warning","Network Intf Error Critical","Sudden Increase in Network Interface Traffic","Sudden Increase in Network Interface Errors","Sudden Increase in Server Process Count","Sudden Increase in Ping Response Times","Server Degraded Lossy Ping Response","Sudden Increase in Reported Events From A Host","Sudden Decrease in Reported Events From A Host","System Collector Event Delayed","FortiSIEM Agent Operational Error","FortiAnalyzer No logs received from a device in 4 hours","SNMP Service Unavailable","License Issues","Permitted Traffic from Emerging Threat IP List","Permitted Traffic from FortiGuard Malware IP List","Outbound Permitted Traffic To Emerging Threat IP List","Outbound Permitted Traffic To FortiGuard Malware IP List","Traffic to Emerging Threat IP List","Traffic to FortiGuard Malware IP List","Traffic to bogon networks","Large Outbound Transfer","Large Outbound Transfer To Outside My Country","Large Inbound Transfer From Outside My Country","Sudden Increase in Firewall Connections","Sudden Increase in Firewall Denied Outbound Traffic","Sudden Increase in Firewall Denied Inbound Traffic","Sudden Increase in Outbound Firewall Aggregate Denies","Excessive Denied Connections From Same Src","Excessive Denied DNS Queries","End User DNS Queries to Unauthorized DNS Servers","Excessive End User DNS Queries","Sudden Increase In DNS Requests From A Specific Host","Sudden Change In DNS Data Transfer Pattern From A Specific Host","Heavy TCP Host Scan","Heavy TCP Host Scan On Fixed Port","Heavy TCP Port Scan Single Destination","Heavy UDP Host Scan","Heavy UDP Port Scan Single Host","Multiple IPS Detected Scans From Same Src","Stealth Scan using a tool","ICMP Flood From Same Source","Sudden Increase in ICMP Requests From A Host","Inbound insecure protocol traffic detected","Outbound insecure protocol traffic from non guest network","Remote Desktop traffic from Internet","VNC traffic from Internet","Suspicious Login","Uncommon VPN Login","User Login Success from other countries","Sudden User Location Change","Concurrent Failed Authentications To Same Account From Multiple Countries","Concurrent Failed Authentications To Same Account From Multiple Cities","Concurrent Successful Authentications To Same Account From Multiple Cities","Sudden Increase in Successful Logons To A Host","Sudden Increase in Failed Logons To A Host","Sudden Increase in User Login Volume","Transient Windows Account Usage","Account Locked","Windows Account Unlocked","Windows User Created","Windows User Deleted","Windows User Password Changed","Windows User Account Enabled","Windows User Account Disabled","Windows User Account Name Changed","Windows User Account Properties Changed","Windows User Added to Groups","Windows User Removed from Groups","Windows Groups Changed","Windows Groups Created","Windows Hidden Local User Creation","Windows Local User Creation","User added to Administrator Group","User added to Remote Desktop User Group","User deleted from Remote Desktop User Group","Privilege user account modification","Account created by privilege users","AD Group Modification Detected","Group Policy Object Created","Group Policy Object Modified","Windows AD User Enumeration","Windows NTLMv1 Logon Between Client and Server","Windows Possible DC Shadow Attack","Windows Active Directory Replication from Non Machine Account","Windows Add or Remove Computer from DC","Windows Possible Shadow Credentials Added","Windows Replay Attack Detected","Windows Outgoing Logon with New Credentials","Windows Failed Logon From Public IP","Windows Locked Workstation","Windows Unauthorized System Time Modification","Windows Logging Service Shutdown","Windows Windows Service Terminated With Error","Windows Service Installed By Unusual Client","Windows Remote Access Tool Services Installed","Windows Application Uninstalled","Windows External Disk Drive or USB Storage Device","Windows Removable Media Inserts","Windows Suspicious PowerShell Execution","Windows Suspicious Service Creation","Windows Suspicious WMI Activity","Windows Suspicious LSASS Access","Windows Potential Credential Dumping","Windows Mimikatz DC Sync","Windows Possible Lateral Movement via Remote Services","Windows Unusual Scheduled Task Creation","Windows Abnormal Process Injection","Windows Unauthorized Registry Modification","Windows Event Log Cleared","Windows Suspicious Firewall Rule Added","Windows New Inbound Firewall Rule","Windows Unusual Outbound Connection","Windows Data Exfiltration Suspected","Windows Suspicious DNS Tunneling","Windows Unusual Network Beaconing","Windows TOR Connection Detected","Windows Cryptocurrency Miner Detected","Windows Unauthorized Software Installed","Windows Untrusted Driver Installed","Windows Kernel Driver Load Anomaly","Windows Secure Boot Disabled","Windows BitLocker Disabled","Windows Shadow Copy Deleted","Windows Volume Shadow Copy Deletion Attempt","Windows RDP Brute Force Attempt","Windows Suspicious Remote Desktop Tool","Windows Unauthorized Remote Assistance","Windows New VPN Connection","Windows Unusual Geo Login","Windows MFA Disabled","Windows Suspicious OAuth App Consent","UEBA AI detects unusual process created","UEBA AI detects unusual process stopped","UEBA AI detects unusual file reading","UEBA AI detects unusual file writing","UEBA AI detects unusual file creation","UEBA AI detects unusual file deletion","UEBA AI detects unusual file renamed","UEBA AI detects unusual file download","UEBA AI detects unusual file upload","UEBA AI detects unusual file movement","UEBA Policy detects ransomware file types","UEBA Policy detects ransomware note","UEBA Policy detects removable media read","UEBA Policy detects removable media write","UEBA Policy detects suspicious applications","UEBA Policy detects hacking tool usage","UEBA Policy detects potential pirated media","UEBA Policy detects potential leaver editing a CV at work","Ransomware detected on a host","Ransomware outbreak detected","Excessive file changes on a host Potential Ransomware","Safetica DLP Sensitive Data Activity","Safetica DLP Data Upload Violation","Safetica DLP WebMail Data Upload Block","MS 365 Defender Generic Alert","MS 365 Defender Malware Detected","MS 365 Defender Suspicious Activity Detected","MS 365 Defender Incident Triggered","High Severity MS 365 Defender Incident Triggered","Office365 Suspicious File Type Uploaded","Office365 Impossible Travel Detected","Office365 Suspicious Inbox Rule","Office365 External Forwarding Enabled","Office365 New OAuth Application Added","Office365 Suspicious Admin Activity","Office365 Mailbox Permission Changed","Office365 User Added to Privileged Role","Office365 Legacy Authentication Used","Office365 Login From New Device","Office365 New Country Login","Office365 Suspicious SharePoint Download","Office365 Mass File Deletion","Office365 Mass File Download","Office365 Suspicious OneDrive Activity","Azure Resource Group Deleted","Azure Suspicious Role Assignment","Azure Resource Deletion Detected","Azure Unusual VM Creation","Azure Unusual Storage Access","Azure Public Blob Access Enabled","Azure NSG Rule Modified","Azure Unusual Key Vault Access","Azure Secret Retrieved from Key Vault","Azure Suspicious Sign in Risk","Azure Conditional Access Policy Modified","Azure MFA Requirement Disabled","Azure New Service Principal Created","Azure Privileged Identity Management Activation","Linux File Permission Modification","Linux Kernel Module Modification","Linux Setgid Bit Set via chmod","Linux Setuid Bit Set via chmod","Linux Unusual Process Execution from Temp","Linux Process Discovery via Built In Applications","Linux Mknod Process Activity"];
 const SORTED_INCIDENTS = [...INCIDENTS].sort((a, b) => a.localeCompare(b));
 const STORAGE_KEYS = { aiKey: 'soc_ai', tiKey: 'soc_ti' };
@@ -775,11 +803,11 @@ function setupIncidentRuleCombo() {
 
 const AI_MODELS = {
   gemini: [
+    { label: "Gemini 2.5 Pro (Best)", value: "models/gemini-2.5-pro" },
+    { label: "Gemini 2.5 Flash", value: "models/gemini-2.5-flash" },
     { label: "Gemini 2.0 Flash", value: "models/gemini-2.0-flash" },
-    { label: "Gemini 2.0 Pro", value: "models/gemini-2.0-pro" },
     { label: "Gemini 1.5 Pro", value: "models/gemini-1.5-pro" },
-    { label: "Gemini 1.5 Flash", value: "models/gemini-1.5-flash" },
-    { label: "Gemini 2.5 Flash", value: "models/gemini-2.5-flash" }
+    { label: "Gemini 1.5 Flash", value: "models/gemini-1.5-flash" }
   ],
   openai: [
     { label: "gpt-4o", value: "gpt-4o" },
@@ -1111,13 +1139,15 @@ ${question}
     let answer = "";
 
     if (provider === "gemini") {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${model}:generateContent?key=${aiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: agentPrompt }] }] })
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error?.message || "API Error");
+      const typingBubble = document.querySelector("#typingRow .msg-bubble");
+      const setRetryStatus = (msg) => {
+        if (typingBubble) typingBubble.textContent = msg;
+      };
+      const data = await geminiRequest(
+        model, aiKey,
+        { contents: [{ parts: [{ text: agentPrompt }] }] },
+        setRetryStatus
+      );
       answer = data.candidates?.[0]?.content?.parts?.[0]?.text || "No content.";
     } else if (provider === "openai") {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -1136,7 +1166,12 @@ ${question}
     addAgentMsg(answer);
   } catch (e) {
     removeTyping();
-    addAgentMsg("Error: " + e.message);
+    const isRateLimit = e.message.toLowerCase().includes("quota") ||
+      e.message.toLowerCase().includes("rate") || e.message.includes("429");
+    addAgentMsg(isRateLimit
+      ? "Rate limit exhausted. Wait a few minutes then try again, or switch to a model with more quota (e.g. Gemini 1.5 Pro)."
+      : "Error: " + e.message
+    );
   }
 }
 
@@ -1247,31 +1282,32 @@ async function runSOCEngine() {
 
   LOG DATA FOR ANALYSIS: ${masked}`;
 
+  const setLoadingText = (msg) => {
+    const el = document.getElementById('loadingText');
+    if (el) el.textContent = msg;
+  };
+
   try {
-    let response;
+    let result = "";
 
     if(provider === "gemini") {
-      response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${model}:generateContent?key=${aiKey}`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-      });
+      setLoadingText("Protecting Data & Analyzing...");
+      const data = await geminiRequest(
+        model, aiKey,
+        { contents: [{ parts: [{ text: prompt }] }] },
+        setLoadingText
+      );
+      result = data.candidates?.[0]?.content?.parts?.[0]?.text || "No content.";
     } else if(provider === "openai") {
-      response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${aiKey}` },
         body: JSON.stringify({ model: model, messages: [{ role: "user", content: prompt }] })
       });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error?.message || "API Error");
+      result = data.choices?.[0]?.message?.content || "No content.";
     } else {
       throw new Error("This provider needs backend proxy (CORS).");
-    }
-
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error?.message || "API Error");
-
-    let result = "";
-    if (provider === "gemini") {
-      result = data.candidates?.[0]?.content?.parts?.[0]?.text || "No content.";
-    } else {
-      result = data.choices?.[0]?.message?.content || "No content.";
     }
 
     const finalReport = unmaskReport(result);
@@ -1289,9 +1325,15 @@ async function runSOCEngine() {
     setDefaultBotSuggestions();
 
   } catch(e) {
-    alert("Error: " + e.message);
+    const isRateLimit = e.message.toLowerCase().includes("quota") ||
+      e.message.toLowerCase().includes("rate") || e.message.includes("429");
+    alert(isRateLimit
+      ? "Rate limit exhausted after retries.\n\nTip: Google's free tier is heavily throttled in afternoons/evenings. Try again in 5–10 min, or switch to Gemini 1.5 Pro which has a separate quota."
+      : "Error: " + e.message
+    );
   } finally {
     loader.style.display = 'none';
+    setLoadingText("Protecting Data & Analyzing...");
   }
 }
 
