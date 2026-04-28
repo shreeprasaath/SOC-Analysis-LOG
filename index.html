@@ -1318,6 +1318,9 @@ async function runSOCEngine() {
   Recommended Actions:
   (List actionable remediation steps)
 
+  Raw Log:
+  Rawlogs attached in analysis
+
   Classification: [TP or FP? Explain briefly.]
 
   Regards,
@@ -1351,7 +1354,9 @@ async function runSOCEngine() {
       throw new Error("This provider needs backend proxy (CORS).");
     }
 
-    result = result.trimEnd() + '\n\nRaw Log:\nRawlogs attached in analysis';
+    if (!/Raw Log:/i.test(result)) {
+      result = result.trimEnd() + '\n\nRaw Log:\nRawlogs attached in analysis';
+    }
     const finalReport = unmaskReport(result);
 
     document.getElementById('reportContent').innerText = finalReport;
