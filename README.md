@@ -1,58 +1,66 @@
-# SOC Incident Analysis Tool
+# SOC Intelligence Console
 
-A web-based tool designed to assist Security Operations Center (SOC) analysts in analyzing, masking, and reporting on security incidents. This application provides an interface to process security logs, sanitize sensitive configuration data, and generate standardized event analysis reports.
+A client-side web application for Security Operations Center analysts. Paste raw logs, select an AI model, and get a structured incident report — with PII masked before anything leaves your browser.
 
-## 🚀 Features
+Live: https://maveera.github.io/SOC-Incident-Analysis/
 
-- **Log Analysis**: Input raw security logs for parsing and review.
-- **Data Masking**: Automatically detects and masks sensitive information (like API keys, passwords, and IP addresses) from logs to ensure safe sharing.
-- **AI-Powered Insights**: (Optional) Integration with AI models to provide automated analysis and summary of the incident logs.
-- **Report Generation**: Generates formatted HTML reports suitable for ticketing systems or stakeholder communication.
-- **Template-Based Fallback**: Includes standard templates for manual filling if AI analysis is unavailable.
+---
 
-## 🛠️ Technologies Used
+## Features
 
-- **HTML5**: semantic structure for the application.
-- **CSS3**: Custom styling for the dark/light mode interface.
-- **JavaScript (ES6+)**: Client-side logic for log processing and masking.
+- **PII Masking** — Automatically strips emails and IP addresses from logs before sending to any AI API. The final report is unmasked locally.
+- **AI Analysis** — Sends masked logs to your chosen provider and returns a formatted SOC incident report (greeting, details, observation, impact, recommended actions, TP/FP classification).
+- **Multi-Provider Support** — Works with Google Gemini, OpenAI, Anthropic Claude, Cohere, Mistral, Groq, Perplexity, and Azure OpenAI.
+- **Gemini Model Selector** — Supports Gemini 3.1 Flash Lite, Gemini 3 Flash, Gemini 2.5 Flash, and Gemini 2.5 Flash Lite.
+- **Threat Intel Lookup** — Optional IP reputation checks via AbuseIPDB or VirusTotal before analysis runs.
+- **SOC AI Agent** — Floating chatbot that answers follow-up questions grounded in the generated report and masked logs.
+- **Incident Rule Search** — Searchable dropdown with 200+ FortiSIEM/SOC alert rules.
+- **Dark / Light Theme** — Toggle in the header; preference applies immediately.
 
-## 📦 Installation & Usage
+---
 
-Since this is a client-side web application, no server installation is required.
+## Technologies
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/maveera/soc-incident-analysis-tool.git] or Live: https://maveera.github.io/SOC-Incident-Analysis
-    cd soc-incident-analysis-tool
-    ```
+- HTML5, CSS3, JavaScript (ES6+) — no build step, no dependencies
+- Google Gemini API, OpenAI API (direct browser fetch)
+- localStorage for API key persistence
 
-2.  **Run the Application:**
-    - Simply open the `Updateindex.html` file in any modern web browser.
-    - *Optional*: For a better development experience, you can serve it using a local server (e.g., Live Server in VS Code or Python `http.server`).
+---
 
-    ```bash
-    # Example using Python
-    python -m http.server 8000
-    # Then navigate to http://localhost:8000/Updateindex.html
-    ```
+## Usage
 
-## 📖 How to Use
+No installation required. Open `index.html` in any modern browser, or serve it locally:
 
-1.  **Paste Logs**: Copy raw text or logs into the designated input area.
-2.  **Analyze**: Click the "Analyze" or "Process" button to trigger the masking and analysis logic.
-3.  **Review**: Check the output section for the sanitized log and the generated analysis report.
-4.  **Export**: Use the "Copy to Clipboard" or "Save Report" button to use the data in your official reports.
+```bash
+git clone https://github.com/shreeprasaath/SOC-Analysis-LOG.git
+cd SOC-Analysis-LOG
+python -m http.server 8000
+# Open http://localhost:8000
+```
 
-## 🤝 Contributing
+### Workflow
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. **API Key** — Paste your Gemini or OpenAI key and press Enter to save it.
+2. **Fill in** Customer Name, Analyst Name, and optionally a Threat Intel key.
+3. **Select** the Incident Rule that triggered the alert.
+4. **Choose** AI Provider and Model.
+5. **Paste** the raw unmasked logs into the log input area.
+6. **Run Analysis Engine** — logs are masked, TI lookup runs (if configured), then the AI generates the report.
+7. **Copy** the report for use in your ticketing system.
+8. **Ask follow-up questions** via the SOC AI Agent chat (bottom-right).
 
-1.  Fork the project
-2.  Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
+---
 
-## 📄 License
+## Supported AI Providers
 
-Distributed under the MIT License. See `LICENSE` for more information.
+| Provider | Notes |
+|---|---|
+| Google Gemini | Direct API — recommended. Free tier available. |
+| OpenAI | Direct API. |
+| Anthropic Claude, Cohere, Mistral, Groq, Perplexity, Azure OpenAI | Require a backend proxy due to browser CORS restrictions. |
+
+---
+
+## License
+
+MIT
